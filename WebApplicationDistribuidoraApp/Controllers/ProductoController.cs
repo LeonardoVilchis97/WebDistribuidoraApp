@@ -92,9 +92,8 @@ namespace WebApplicationDistribuidoraApp.Controllers
         [HttpPost]
         public IActionResult AgregarProductoProveedor(ProductoProveedorViewModel model)
         {
-            ModelState.Remove("proveedoresDisponibles");
-            ModelState.Remove("esEdicionProveedor");
-            ModelState.Remove("idProductoProveedor");
+            LimpiarModelState();
+
 
             if (!ModelState.IsValid)
             {
@@ -109,7 +108,7 @@ namespace WebApplicationDistribuidoraApp.Controllers
                 model.costo.Value
             );
 
-            return Json(new { success = true }); // ✅ cambiado
+            return Json(new { success = true }); 
         }
 
         [HttpGet]
@@ -130,18 +129,7 @@ namespace WebApplicationDistribuidoraApp.Controllers
         {
             var proveedorProducto = _productoProveedorRepository.obtenerProductoProveedorPorId(idProductoProveedor);
             var proveedores = _proveedorRepository.listarProveedores() ?? new List<Proveedor>();
-
-            var vm = new ProductoProveedorViewModel
-            {
-                idProductoProveedor = proveedorProducto.idProductoProveedor,
-                idProducto = proveedorProducto.idProducto,
-                idProveedor = proveedorProducto.idProveedor,
-                claveProveedor = proveedorProducto.claveProveedor,
-                costo = proveedorProducto.costo,
-                esEdicionProveedor = true,
-                proveedoresDisponibles = proveedores
-            };
-
+            var vm = llenarProductoProveedorViewModel(proveedorProducto, proveedores);
             return PartialView("_AgregarProveedorModal", vm);
         }
 
@@ -150,7 +138,6 @@ namespace WebApplicationDistribuidoraApp.Controllers
         public IActionResult EditarProductoProveedor(ProductoProveedorViewModel vm)
         {
             ModelState.Remove("proveedoresDisponibles");
-
             if (!ModelState.IsValid)
             {
                 vm.proveedoresDisponibles = _proveedorRepository.listarProveedores();
@@ -158,16 +145,10 @@ namespace WebApplicationDistribuidoraApp.Controllers
                 return PartialView("_AgregarProveedorModal", vm);
             }
 
-            ProductoProveedor productoProveedor = new ProductoProveedor();
-            productoProveedor.idProducto = vm.idProducto;
-            productoProveedor.idProveedor = vm.idProveedor.Value;
-            productoProveedor.claveProveedor = vm.claveProveedor;
-            productoProveedor.costo = vm.costo.Value;
-            productoProveedor.idProductoProveedor = vm.idProductoProveedor;
-
+            ProductoProveedor productoProveedor = llenarProductoProveedor(vm);
             _productoProveedorRepository.actualizarProductoProveedor(productoProveedor);
 
-            return Json(new { success = true }); // ✅ cambiado
+            return Json(new { success = true });
         }
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -181,7 +162,36 @@ namespace WebApplicationDistribuidoraApp.Controllers
             return RedirectToAction(nameof(Editar), new { idProducto }); 
         }
 
-
+        private void LimpiarModelState()
+        {
+            ModelState.Remove(nameof(ProductoProveedorViewModel.proveedoresDisponibles));
+            ModelState.Remove(nameof(ProductoProveedorViewModel.esEdicionProveedor));
+            ModelState.Remove(nameof(ProductoProveedorViewModel.idProductoProveedor));
+        }
+        private ProductoProveedor llenarProductoProveedor(ProductoProveedorViewModel vm)
+        {
+            ProductoProveedor productoProveedor = new ProductoProveedor();
+            productoProveedor.idProducto = vm.idProducto;
+            productoProveedor.idProveedor = vm.idProveedor.Value;
+            productoProveedor.claveProveedor = vm.claveProveedor;
+            productoProveedor.costo = vm.costo.Value;
+            productoProveedor.idProductoProveedor = vm.idProductoProveedor;
+            return productoProveedor;
+        }
+        private ProductoProveedorViewModel llenarProductoProveedorViewModel(ProductoProveedor proveedorProducto,IEnumerable<Proveedor> proveedores) {
+            
+            var vm = new ProductoProveedorViewModel
+            {
+                idProductoProveedor = proveedorProducto.idProductoProveedor,
+                idProducto = proveedorProducto.idProducto,
+                idProveedor = proveedorProducto.idProveedor,
+                claveProveedor = proveedorProducto.claveProveedor,
+                costo = proveedorProducto.costo,
+                esEdicionProveedor = true,
+                proveedoresDisponibles = proveedores
+            };
+            return vm;
+        }
 
     }
 }
