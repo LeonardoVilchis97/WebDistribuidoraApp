@@ -1,0 +1,40 @@
+﻿.container-producto {
+    max-width: 900px;
+    margin: auto;
+}
+
+.card-producto {
+    border: none;
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+    .card-producto .card-header {
+        padding: 15px 20px;
+        font-weight: 600;
+    }
+
+    .card-producto .card-body {
+        padding: 25px;
+    }
+
+.form-label {
+    font-weight: 500;
+}
+
+.form-control,
+.form-select {
+    border-radius: 6px;
+}
+
+.btn {
+    min-width: 110px;
+}
+
+.botones {
+    margin-top: 20px;
+}
+
+hr {
+    opacity: .15;
+}

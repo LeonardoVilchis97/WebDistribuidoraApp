@@ -1,0 +1,134 @@
+﻿@model WebApplicationDistribuidoraApp.ViewModels.ProductoFiltroViewModel
+
+<div class="container mt-4">
+
+    <div class="card shadow">
+        <div class="card-header bg-info text-white">
+            <h4 class="mb-0">Gestión de Productos</h4>
+        </div>
+
+        <div class="card-body">
+                @if (TempData["Error"] != null)
+                {
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        @TempData["Error"]
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                }
+            <form asp-action="Index" method="get" class="row g-3 align-items-end mb-4">
+
+                <div class="col-md-4">
+                    <label class="form-label">Clave</label>
+                   <input type="text"
+                           name="clave"
+                           value="@Model.Clave"
+                           class="form-control"
+                           placeholder="Ingrese clave" />
+                </div>
+
+                <div class="col-md-4">
+                    <label class="form-label">Tipo de Producto</label>
+                   <select name="idTipoProducto" class="form-select">
+
+                        <option value="">Seleccione...</option>
+                        @foreach (var tipo in Model.TiposProducto)
+                        {
+                            if (Model.IdTipoProducto == tipo.idTipoProducto)
+                            {
+                                <option value="@tipo.idTipoProducto" selected>
+                                    @tipo.nombre
+                                </option>
+                            }
+                            else
+                            {
+                                <option value="@tipo.idTipoProducto">
+                                    @tipo.nombre
+                                </option>
+                            }
+                       }
+                    </select>
+                </div>
+                <div class="col-md-4">
+                    <div class="d-flex gap-2">
+                        <button type="submit" class="btn btn-primary btn-sm">
+                            Buscar
+                        </button>
+                        <a asp-action="Index"
+                           class="btn btn-secondary btn-sm">
+                            Limpiar
+                        </a>
+                        <a asp-action="Editar"
+                           class="btn btn-success btn-sm">
+                            Agregar
+                        </a>
+                    </div>
+                </div>
+            </form>
+            <div class="table-responsive">
+                <table class="table table-bordered table-hover align-middle">
+
+                    <thead class="table-dark">
+                        <tr class="text-center">
+                            <th width="80">Editar</th>
+                            <th>Producto</th>
+                            <th>Clave Producto</th>
+                            <th width="120">Precio</th>
+                            <th width="100">Eliminar</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+
+                    @if (Model.Productos.Any())
+                    {
+                        @foreach (var p in Model.Productos)
+                        {
+                            <tr>
+                                <td class="text-center">
+                                    <a asp-action="Editar"
+                                       asp-route-idProducto="@p.idProducto"
+                                       class="btn btn-warning btn-sm">
+                                        Editar
+                                    </a>
+                                </td>
+
+                                <td>@p.nombre</td>
+
+                                <td>@p.clave</td>
+
+                                <td class="text-end">
+                                    @p.precioVenta
+                                </td>
+
+                                <td class="text-center">
+                                   <form asp-action="Eliminar" method="post" style="display:inline;"
+                                          onsubmit="return confirm('¿Seguro que deseas eliminar este producto?');">
+                                        @Html.AntiForgeryToken()
+                                        <input type="hidden" name="idProducto" value="@p.idProducto" />
+                                        <button type="submit" class="btn btn-danger btn-sm">
+                                            Eliminar
+                                        </button>
+                                    </form>
+                                </td>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="5" class="text-center">
+                                No existen productos.
+                            </td>
+                        </tr>
+                    }
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+    </div>
+
+</div>

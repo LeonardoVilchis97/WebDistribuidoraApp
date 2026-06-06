@@ -1,0 +1,55 @@
+﻿@model IEnumerable<WebApplicationDistribuidoraApp.Models.ProductoProveedor>
+<table class="table table-bordered table-striped">
+    <thead class="table-light">
+        <tr>
+            <th>Editar</th>
+            <th>Proveedor</th>
+            <th>Clave Producto</th>
+            <th>Costo</th>
+            <th>Eliminar</th>
+        </tr>
+    </thead>
+    <tbody>
+        @if (Model != null)
+        {
+            foreach (var prov in Model)
+            {
+                <tr>
+                    <td>
+                        <button type="button"
+                                class="btn btn-warning btn-sm"
+                                data-bs-toggle="modal"
+                                data-bs-target="#modalAgregarProveedor"
+                                data-url="@Url.Action("EditarProductoProveedor", "Producto", new { idProductoProveedor = prov.idProductoProveedor })">
+                            Editar
+                        </button>
+                    </td>
+                    <td>@prov.nombreProveedor</td>
+                    <td>@prov.claveProveedor</td>
+                    <td>@prov.costo.ToString("C")</td>
+                    <td>
+                        <button type="submit"
+                                form="formEliminarProv_@prov.idProductoProveedor"
+                                class="btn btn-danger btn-sm"
+                                onclick="return confirm('¿Seguro que deseas eliminar este proveedor?');">
+                            Eliminar
+                        </button>
+                    </td>
+                </tr>
+                <form id="formEliminarProv_@prov.idProductoProveedor"
+                      asp-action="EliminarProveedor"
+                      asp-controller="Producto"
+                      method="post">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" name="idProductoProveedor" value="@prov.idProductoProveedor" />
+                </form>
+            }
+        }
+    </tbody>
+</table>
+<div class="modal fade" id="modalAgregarProveedor" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content" id="modalAgregarProveedorContent">
+        </div>
+    </div>
+</div>
